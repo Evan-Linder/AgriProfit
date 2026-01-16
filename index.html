@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriProfit - Crop Profitability Calculator</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1>🌾 AgriProfit</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link" data-view="login" id="loginNavLink">Login</a></li>
+                <li><a href="#" class="nav-link" data-view="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-view="calculator">Calculator</a></li>
+                <li><a href="#" class="nav-link" data-view="comparison">Scenarios</a></li>
+                <li><a href="#" class="nav-link" data-view="history">History</a></li>
+                <li><a href="#" class="nav-link" data-view="settings">Settings</a></li>
+            </ul>
+            <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Login/Register View -->
+        <section id="login" class="view">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <h2>🌾 AgriProfit</h2>
+                        <p class="demo-label">For Demo/Model Use Only</p>
+                    </div>
+
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="login">Login</button>
+                        <button class="auth-tab" data-tab="register">Register</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" class="auth-form active">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" placeholder="farmer@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        </div>
+
+                        <div class="form-group checkbox">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rememberMe">
+                                <span>Remember me</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-full">Sign In</button>
+                        <p class="auth-note">Demo Mode: Use any email/password to enter</p>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="registerForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="regName">Full Name</label>
+                            <input type="text" id="regName" placeholder="John Farmer" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regEmail">Email Address</label>
+                            <input type="email" id="regEmail" placeholder="farmer@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <input type="password" id="regPassword" placeholder="Create a password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regConfirm">Confirm Password</label>
+                            <input type="password" id="regConfirm" placeholder="Confirm password" required>
+                        </div>
+
+                        <div class="form-group checkbox">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="agreeTerms" required>
+                                <span>I agree to Terms of Service</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-full">Create Account</button>
+                        <p class="auth-note">Demo Mode: Registration is not functional</p>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p class="demo-notice">⚠️ This is a demonstration login page. No authentication is performed.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard View -->
+        <section id="dashboard" class="view">
+            <div class="view-header">
+                <h2>Dashboard</h2>
+                <p>Overview of your crop profitability analysis</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Overview Cards -->
+                <div class="card-grid">
+                    <div class="metric-card">
+                        <h3>Total Acres Analyzed</h3>
+                        <p class="metric-value" id="totalAcres">0</p>
+                        <span class="metric-unit">acres</span>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Avg Profit/Acre</h3>
+                        <p class="metric-value" id="avgProfitAcre">$0</p>
+                        <span class="metric-unit">USD/acre</span>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Total Net Profit</h3>
+                        <p class="metric-value" id="totalProfit">$0</p>
+                        <span class="metric-unit">net</span>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Most Profitable</h3>
+                        <p class="metric-value" id="topCrop">—</p>
+                        <span class="metric-unit">crop</span>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="chart-section">
+                    <h3>Profit Comparison by Crop</h3>
+                    <div id="profitChart" class="chart-container">
+                        <canvas id="profitCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crop Calculator View -->
+        <section id="calculator" class="view">
+            <div class="view-header">
+                <h2>Crop Profitability Calculator</h2>
+                <p>Calculate estimated profit based on crop type, acreage, and costs</p>
+            </div>
+
+            <div class="calculator-container">
+                <form id="calculatorForm" class="form-grid">
+                    <!-- Left Column: Basic Info -->
+                    <div class="form-column">
+                        <fieldset class="form-section">
+                            <legend>Crop & Acreage</legend>
+
+                            <div class="form-group">
+                                <label for="cropType">Crop Type <span class="required">*</span></label>
+                                <select id="cropType" required>
+                                    <option value="">Select a crop...</option>
+                                    <option value="corn">Corn</option>
+                                    <option value="soybeans">Soybeans</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="barley">Barley</option>
+                                    <option value="oats">Oats</option>
+                                    <option value="alfalfa">Alfalfa</option>
+                                    <option value="cotton">Cotton</option>
+                                </select>
+                                <span class="tooltip" title="Select the primary crop for this calculation">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="acreage">Acres Planted <span class="required">*</span></label>
+                                <input type="number" id="acreage" min="0.1" step="0.1" required placeholder="e.g., 100">
+                                <span class="input-unit">acres</span>
+                                <span class="tooltip" title="Total number of acres for this crop">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="yieldPerAcre">Expected Yield <span class="required">*</span></label>
+                                <input type="number" id="yieldPerAcre" min="0" step="0.1" required
+                                    placeholder="e.g., 150">
+                                <span class="input-unit" id="yieldUnit">bu/acre</span>
+                                <span class="tooltip" title="Expected bushels per acre (varies by crop type)">?</span>
+                            </div>
+                        </fieldset>
+
+                        <!-- Market Price Section -->
+                        <fieldset class="form-section">
+                            <legend>Market Price</legend>
+                            <div class="price-info">
+                                <p>Real-time commodity price from USDA/CME</p>
+                                <p class="price-timestamp" id="priceTimestamp"></p>
+                                <button type="button" id="refreshPriceBtn" class="btn-secondary">Refresh Price</button>
+                            </div>
+                            <div class="form-group">
+                                <label for="marketPrice">Market Price <span class="required">*</span></label>
+                                <input type="number" id="marketPrice" min="0" step="0.01" required
+                                    placeholder="Auto-fetched">
+                                <span class="input-unit">$/bu</span>
+                                <div class="price-loader" id="priceLoader" style="display: none;">
+                                    <span class="loader"></span> Fetching price...
+                                </div>
+                                <span class="price-error" id="priceError"></span>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <!-- Right Column: Costs -->
+                    <div class="form-column">
+                        <fieldset class="form-section">
+                            <legend>Cost Inputs (per acre)</legend>
+
+                            <div class="form-group">
+                                <label for="seedCost">Seed Cost</label>
+                                <input type="number" id="seedCost" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-unit">$/acre</span>
+                                <span class="tooltip" title="Cost of seeds per acre">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fertilizerCost">Fertilizer Cost</label>
+                                <input type="number" id="fertilizerCost" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-unit">$/acre</span>
+                                <span class="tooltip" title="Cost of fertilizers and nutrients per acre">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="chemicalCost">Chemical Cost</label>
+                                <input type="number" id="chemicalCost" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-unit">$/acre</span>
+                                <span class="tooltip" title="Herbicides, pesticides, fungicides per acre">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="laborCost">Labor Cost</label>
+                                <input type="number" id="laborCost" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-unit">$/acre</span>
+                                <span class="tooltip" title="Direct labor costs per acre">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="equipmentCost">Equipment Cost</label>
+                                <input type="number" id="equipmentCost" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-unit">$/acre</span>
+                                <span class="tooltip"
+                                    title="Equipment depreciation, fuel, maintenance per acre">?</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="miscCost">Miscellaneous Cost</label>
+                                <input type="number" id="miscCost" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-unit">$/acre</span>
+                                <span class="tooltip" title="Other costs (insurance, storage, etc.) per acre">?</span>
+                            </div>
+                        </fieldset>
+                    </div>
+                </form>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <h3>Profitability Summary</h3>
+                    <div class="results-grid">
+                        <div class="result-card success">
+                            <h4>Market Price</h4>
+                            <p class="result-value" id="resultPrice">—</p>
+                            <span class="result-unit">$/bu</span>
+                        </div>
+                        <div class="result-card">
+                            <h4>Total Production</h4>
+                            <p class="result-value" id="resultProduction">—</p>
+                            <span class="result-unit">bu</span>
+                        </div>
+                        <div class="result-card success">
+                            <h4>Total Revenue</h4>
+                            <p class="result-value" id="resultRevenue">—</p>
+                            <span class="result-unit">USD</span>
+                        </div>
+                        <div class="result-card danger">
+                            <h4>Total Cost</h4>
+                            <p class="result-value" id="resultCost">—</p>
+                            <span class="result-unit">USD</span>
+                        </div>
+                        <div class="result-card">
+                            <h4>Net Profit</h4>
+                            <p class="result-value" id="resultProfit">—</p>
+                            <span class="result-unit">USD</span>
+                        </div>
+                        <div class="result-card">
+                            <h4>Profit/Acre</h4>
+                            <p class="result-value" id="resultProfitAcre">—</p>
+                            <span class="result-unit">$/acre</span>
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <button id="saveScenarioBtn" class="btn-primary">Save Scenario</button>
+                        <button id="resetFormBtn" class="btn-secondary">Reset Form</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario Comparison View -->
+        <section id="comparison" class="view">
+            <div class="view-header">
+                <h2>Scenario Comparison</h2>
+                <p>Compare profitability across different scenarios</p>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-controls">
+                    <p>Select scenarios to compare side-by-side</p>
+                </div>
+
+                <div id="comparisonTable" class="comparison-table">
+                    <p class="placeholder">No scenarios saved yet. Create one in the Calculator.</p>
+                </div>
+
+                <div id="comparisonChart" class="chart-section">
+                    <h3>Scenario Comparison Chart</h3>
+                    <div class="chart-container">
+                        <canvas id="comparisonCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History View -->
+        <section id="history" class="view">
+            <div class="view-header">
+                <h2>Calculation History</h2>
+                <p>View, rename, and manage your saved calculations</p>
+            </div>
+
+            <div class="history-container">
+                <div class="history-controls">
+                    <input type="text" id="historySearch" placeholder="Search scenarios by name..." class="search-box">
+                    <button id="clearHistoryBtn" class="btn-secondary">Clear All History</button>
+                </div>
+
+                <div id="historyList" class="history-list">
+                    <p class="placeholder">No saved calculations yet. Create one in the Calculator.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings View -->
+        <section id="settings" class="view">
+            <div class="view-header">
+                <h2>Settings</h2>
+                <p>Customize your AgriProfit experience</p>
+            </div>
+
+            <div class="settings-container">
+                <div class="settings-section">
+                    <h3>Display Preferences</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="unitPreference">Unit System</label>
+                            <p class="setting-description">Choose your preferred measurement units</p>
+                        </div>
+                        <select id="unitPreference">
+                            <option value="imperial">Bushels (Imperial)</option>
+                            <option value="metric">Metric Tons</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="currency">Currency Display</label>
+                            <p class="setting-description">Choose your currency for all calculations</p>
+                        </div>
+                        <select id="currency">
+                            <option value="usd">USD ($)</option>
+                            <option value="eur">EUR (€)</option>
+                            <option value="gbp">GBP (£)</option>
+                            <option value="cad">CAD (C$)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="decimalPlaces">Decimal Places</label>
+                            <p class="setting-description">How many decimal places to display</p>
+                        </div>
+                        <select id="decimalPlaces">
+                            <option value="2">2 decimal places</option>
+                            <option value="3">3 decimal places</option>
+                            <option value="4">4 decimal places</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>API & Caching</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="refreshInterval">Price Refresh Interval</label>
+                            <p class="setting-description">How often to refresh commodity prices</p>
+                        </div>
+                        <select id="refreshInterval">
+                            <option value="5">Every 5 minutes</option>
+                            <option value="15">Every 15 minutes</option>
+                            <option value="30">Every 30 minutes</option>
+                            <option value="60">Every hour</option>
+                            <option value="manual">Manual only</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="cacheMode">Cache Behavior</label>
+                            <p class="setting-description">Control how prices are cached</p>
+                        </div>
+                        <select id="cacheMode">
+                            <option value="smart">Smart (reduce API calls)</option>
+                            <option value="aggressive">Aggressive (always use cache)</option>
+                            <option value="disabled">Disabled (always fresh)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Data & Privacy</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="autoSave">Auto-Save Calculations</label>
+                            <p class="setting-description">Automatically save your work to browser storage</p>
+                        </div>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoSave" checked>
+                            <span>Enable auto-save</span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label>Data Management</label>
+                            <p class="setting-description">Manage your stored data</p>
+                        </div>
+                        <div class="button-group">
+                            <button id="exportDataBtn" class="btn-secondary">Export as JSON</button>
+                            <button id="importDataBtn" class="btn-secondary">Import from JSON</button>
+                            <button id="deleteAllDataBtn" class="btn-danger">Delete All Data</button>
+                        </div>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Appearance</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label for="themeMode">Theme Mode</label>
+                            <p class="setting-description">Choose your preferred color scheme</p>
+                        </div>
+                        <select id="themeMode">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto (System preference)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button id="saveSettingsBtn" class="btn-primary">Save Settings</button>
+                    <button id="resetSettingsBtn" class="btn-secondary">Reset to Defaults</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Saving Scenarios -->
+    <div id="saveScenarioModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Save Scenario</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="scenarioName">Scenario Name</label>
+                    <input type="text" id="scenarioName" placeholder="e.g., Spring 2026 - Corn Baseline" required>
+                </div>
+                <div class="form-group">
+                    <label for="scenarioDescription">Description (optional)</label>
+                    <textarea id="scenarioDescription" placeholder="Add notes about this scenario..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelSaveBtn" class="btn-secondary">Cancel</button>
+                <button id="confirmSaveBtn" class="btn-primary">Save Scenario</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Confirming Delete -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-confirm">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure you want to delete this item?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmNoBtn" class="btn-secondary">Cancel</button>
+                <button id="confirmYesBtn" class="btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
