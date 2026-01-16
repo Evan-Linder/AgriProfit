@@ -136,6 +136,15 @@ const App = (() => {
                 handleRegister();
             });
         }
+
+        // Demo button
+        const demoButton = document.getElementById('demoButton');
+        if (demoButton) {
+            demoButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleDemoMode();
+            });
+        }
     };
 
     /**
@@ -223,6 +232,18 @@ const App = (() => {
             document.getElementById('registerForm').reset();
             switchAuthTab('login');
             showToast('Please log in with your new account', 'info');
+        }, 1000);
+    };
+
+    /**
+     * Handle demo mode activation
+     */
+    const handleDemoMode = () => {
+        showToast('Loading demo data...', 'success');
+        
+        // Switch to dashboard after 1 second
+        setTimeout(() => {
+            switchView('dashboard');
         }, 1000);
     };
 
